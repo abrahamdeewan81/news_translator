@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>News Extractor</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            margin: 40px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 250px;
+            margin-top: 10px;
+        }
+
+        input[type=text] {
+            width: 80%;
+            padding: 8px;
+        }
+
+        button {
+            padding: 8px 16px;
+            margin-top: 5px;
+        }
+    </style>
+
+    <script>
+
+        function copyText(id) {
+
+            var copyText = document.getElementById(id);
+
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+
+            navigator.clipboard.writeText(copyText.value);
+
+        }
+
+    </script>
+
+</head>
+
+<body>
+
+    <h2>News Article Extractor</h2>
+
+    <form method="POST">
+
+        <input type="text" name="url" placeholder="Paste news URL here" required>
+
+        <button type="submit">Extract</button>
+
+    </form>
+
+
+    <h3>Original Text</h3>
+
+    <textarea id="originalText" readonly>{{ article_text }}</textarea>
+
+    <br>
+    <button onclick="copyText('originalText')">Copy Original Text</button>
+
+
+    <h3>English Translation</h3>
+
+    <textarea id="translatedText" readonly>{{ translated_text }}</textarea>
+
+    <br>
+    <button onclick="copyText('translatedText')">Copy Translation</button>
+
+    <script>
+
+        var logs = {{ debug_logs | default ([]) | tojson | safe }};
+
+        if (logs.length > 0) {
+            console.log("===== SCRAPER DEBUG LOGS =====");
+
+            logs.forEach(function (log) {
+                console.log(log);
+            });
+        }
+
+    </script>
+</body>
+
+</html>
