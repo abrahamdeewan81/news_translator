@@ -60,7 +60,10 @@ def get_extractor(url, debug_logs):
         return extract_hpbl
 
     """
-
+    if "lagatar.in" in domain:
+        debug_logs.append("Using extractor: lagatar")
+        return extract_lagatar
+        
     # fallback extractor
     debug_logs.append("No domain matched. Using universal extractor.")
     return extract_universal
