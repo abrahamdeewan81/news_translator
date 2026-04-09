@@ -9,32 +9,44 @@ def extract_lagatar(url, debug):
         page = browser.new_page()
 
         page.goto(url)
-        page.wait_for_selector("div.div-article-content")
-        debug.append("div-article-content selector loaded")
+
+        # Wait for the main article container
+        page.wait_for_selector("#articleContent")
+        debug.append("articleContent selector loaded")
 
         html = page.content()
         debug.append(f"HTML downloaded. Size: {len(html)}")
 
         browser.close()
 
-    soup = BeautifulSoup(html,"html.parser")
+    # Parse HTML
+    soup = BeautifulSoup(html, "html.parser")
     debug.append("HTML parsed")
 
-    article = soup.select_one("div.div-article-content")
-    debug.append("div-article-content selector loaded")
+    # Locate article container
+    article = soup.select_one("#articleContent")
+    debug.append("articleContent selector located")
 
     text_list = []
 
-    for p in article.find_all("p"):
-        debug.append(f"Found paragraph: {p}")
+    if article:
+        paragraphs = article.select("div.article-visible p, div.article-blurred p")
+        debug.append(f"Total paragraph tags found: {len(paragraphs)}")
 
-        text = p.get_text(strip=True)
+        for p in paragraphs:
+            debug.append(f"Found paragraph: {p}")
 
-        if text and text != "\xa0":
-            text_list.append(text)
-            debug.append(f"Added text: {text}")
+            text = p.get_text(strip=True)
+
+            if text and text != "\xa0":
+                text_list.append(text)
+                debug.append(f"Added text: {text}")
+
+    else:
+        debug.append("ERROR: articleContent not found")
 
     debug.append(f"Total extracted blocks: {len(text_list)}")
+
     article_text = "\n\n".join(text_list)
 
     if not article_text:
